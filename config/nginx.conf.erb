@@ -1,0 +1,128 @@
+daemon off;
+worker_processes <%= ENV['NGINX_WORKERS'] || 4 %>;
+
+events {
+  use epoll;
+  accept_mutex on;
+  worker_connections 1024;
+}
+
+http {
+  gzip on;
+  gzip_comp_level 3;
+  gzip_min_length 150;
+  gzip_proxied any;
+  gzip_types text/plain text/css text/json text/javascript
+    application/javascript application/x-javascript application/json
+    application/rss+xml application/vnd.ms-fontobject application/x-font-ttf
+    application/xml font/opentype image/svg+xml text/xml;
+
+  server_tokens off;
+
+  log_format l2met 'measure#nginx.service=$request_time request_id=$http_x_request_id';
+  access_log logs/nginx/access.log l2met;
+  error_log logs/nginx/error.log;
+
+  types {
+    text/html html htm shtml;
+    text/css css;
+    text/xml xml;
+    text/cache-manifest manifest appcache;
+    image/gif gif;
+    image/jpeg jpeg jpg;
+    application/x-javascript js;
+    text/mathml mml;
+    text/plain txt;
+    text/vnd.sun.j2me.app-descriptor jad;
+    text/vnd.wap.wml wml;
+    text/x-component htc;
+    image/png png;
+    image/tiff tif tiff;
+    image/vnd.wap.wbmp wbmp;
+    image/x-icon ico;
+    image/x-jng jng;
+    image/x-ms-bmp bmp;
+    image/svg+xml svg;
+    application/msword doc;
+    application/pdf pdf;
+    application/postscript ps eps ai;
+    application/rtf rtf;
+    application/vnd.ms-excel xls;
+    application/vnd.ms-powerpoint ppt;
+    application/x-7z-compressed 7z;
+    application/x-rar-compressed rar;
+    application/x-shockwave-flash swf;
+    application/x-x509-ca-cert der pem crt;
+    application/xhtml+xml xhtml;
+    application/zip zip;
+    audio/midi mid midi kar;
+    audio/mpeg mp3;
+    audio/ogg ogg;
+    video/mpeg mpeg mpg;
+    video/quicktime mov;
+    video/x-mng mng;
+    video/x-ms-wmv wmv;
+  }
+  default_type application/octet-stream;
+  sendfile on;
+
+  client_body_timeout <%= ENV['NGINX_CLIENT_BODY_TIMEOUT'] || 5 %>;
+
+  upstream app_server {
+    server unix:/tmp/nginx.socket fail_timeout=0;
+  }
+
+  server {
+    listen <%= ENV["PORT"] %>;
+    server_name _;
+    keepalive_timeout 5;
+
+    root /app/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+
+    pagespeed on;
+    pagespeed FileCachePath "/tmp/pagespeed/";
+    pagespeed XHeaderValue "pagespeed";
+    pagespeed PreserveUrlRelativity on;
+    pagespeed LowercaseHtmlNames on;
+    pagespeed ModifyCachingHeaders off;
+    pagespeed Statistics off;
+    pagespeed AvoidRenamingIntrospectiveJavascript off;
+    pagespeed MaxCacheableContentLength -1;
+    pagespeed UseExperimentalJsMinifier on;
+    pagespeed RewriteLevel CoreFilters;
+    pagespeed EnableFilters collapse_whitespace;
+    pagespeed EnableFilters remove_comments;
+    pagespeed EnableFilters remove_quotes;
+    pagespeed EnableFilters rewrite_images;
+    pagespeed EnableFilters convert_png_to_jpeg;
+    pagespeed EnableFilters convert_jpeg_to_webp;
+    pagespeed EnableFilters lazyload_images;
+    pagespeed EnableFilters defer_javascript;
+    pagespeed EnableFilters rewrite_javascript;
+    pagespeed EnableFilters inline_css;
+    pagespeed EnableFilters prioritize_critical_css;
+    pagespeed EnableFilters rewrite_css;
+    pagespeed EnableFilters inline_google_font_css;
+    pagespeed EnableFilters insert_dns_prefetch;
+    pagespeed EnableFilters extend_cache;
+    # pagespeed EnableFilters combine_css;
+    # pagespeed EnableFilters fallback_rewrite_css_urls;
+
+    location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" {
+      add_header "" "";
+    }
+
+    location ~ "^/pagespeed_static/" { }
+    location ~ "^/ngx_pagespeed_beacon$" { }
+
+    location / {
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_redirect off;
+      proxy_pass http://app_server;
+    }
+  }
+}
