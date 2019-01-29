@@ -1,0 +1,56 @@
+#!/bin/sh
+
+psmgr=/tmp/nginx-pagespeed-buildpack-wait
+rm -f $psmgr
+mkfifo $psmgr
+
+mkdir -p "/tmp/pagespeed/"
+
+erb config/nginx.conf.erb > config/nginx.conf
+
+n=1
+while getopts :f option ${@:1:2}
+do
+  case "${option}"
+  in
+    f) FORCE=$OPTIND; n=$((n+1));;
+  esac
+done
+
+mkdir -p logs/nginx
+touch logs/nginx/access.log logs/nginx/error.log
+echo 'buildpack=nginx at=logs-initialized'
+
+(
+  tail -qF -n 0 logs/nginx/*.log
+  echo 'logs' >$psmgr
+) &
+
+(
+  COMMAND=${@:$n}
+  echo "buildpack=nginx at=start-app cmd=$COMMAND"
+  $COMMAND
+  echo 'app' >$psmgr
+) &
+
+if [[ -z "$FORCE" ]]
+then
+  FILE="/tmp/app-initialized"
+
+  while [[ ! -f "$FILE" ]]
+  do
+    echo 'buildpack=nginx at=app-initialization'
+    sleep 1
+  done
+  echo 'buildpack=nginx at=app-initialized'
+fi
+
+(
+  echo 'buildpack=nginx at=nginx-start'
+  bin/nginx -p . -c config/nginx.conf
+  echo 'nginx' >$psmgr
+) &
+
+read exit_process <$psmgr
+echo "buildpack=nginx at=exit process=$exit_process"
+exit 1
