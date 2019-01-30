@@ -19,4 +19,7 @@ if [[ ! -f $1/config/nginx.conf.erb ]]; then
 else
   echo '-----> nginx-buildpack: Custom config found in app/config.'
 fi
+
+erb $1/config/nginx.conf.erb > $1/config/nginx.conf
+
 exit 0
