@@ -4,11 +4,9 @@ psmgr=/tmp/nginx-buildpack-wait
 rm -f $psmgr
 mkfifo $psmgr
 
-mkdir -p "/tmp/pagespeed/"
-
-erb config/nginx.conf.erb > config/nginx.conf
-
+mkdir -p /tmp/pagespeed/
 mkdir -p logs/nginx
+
 touch logs/nginx/access.log logs/nginx/error.log
 echo 'buildpack=nginx at=logs-initialized'
 
@@ -22,6 +20,10 @@ echo 'buildpack=nginx at=logs-initialized'
   echo "buildpack=nginx at=start-app cmd=$COMMAND"
   $COMMAND
   echo 'app' >$psmgr
+) &
+
+(
+  erb config/nginx.conf.erb > config/nginx.conf
 ) &
 
 (
