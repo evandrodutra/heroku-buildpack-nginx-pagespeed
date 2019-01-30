@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-psmgr=/tmp/nginx-pagespeed-buildpack-wait
+psmgr=/tmp/nginx-buildpack-wait
 rm -f $psmgr
 mkfifo $psmgr
 
