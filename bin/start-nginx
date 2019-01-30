@@ -7,6 +7,8 @@ mkfifo $psmgr
 mkdir -p /tmp/pagespeed/
 mkdir -p logs/nginx
 
+sed -i 's/NGINX_PORT/'"$PORT"'/' config/nginx.conf
+
 touch logs/nginx/access.log logs/nginx/error.log
 echo 'buildpack=nginx at=logs-initialized'
 
