@@ -23,10 +23,6 @@ echo 'buildpack=nginx at=logs-initialized'
 ) &
 
 (
-  erb config/nginx.conf.erb > config/nginx.conf
-) &
-
-(
   echo 'buildpack=nginx at=nginx-start'
   bin/nginx -p . -c config/nginx.conf
   echo 'nginx' >$psmgr
