@@ -23,7 +23,4 @@ else
   echo '-----> nginx-buildpack: Custom config found in app/config.'
 fi
 
-echo '-----> nginx-buildpack: Apply PORT to nginx.conf.'
-sed -i 's/NGINX_PORT/'"$PORT"'/' $1/config/nginx.conf
-
 exit 0
