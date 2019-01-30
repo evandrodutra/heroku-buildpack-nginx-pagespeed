@@ -29,7 +29,7 @@ http {
   }
 
   server {
-    listen NGINX_PORT;
+    listen <%= ENV["PORT"] %>;
     server_name _;
     keepalive_timeout 5;
 
