@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo 'buildpack=nginx Apply PORT to nginx.conf.'
-sed -i 's/NGINX_PORT/'"$PORT"'/' config/nginx.conf
+sed -i 's/NGINX_PORT/'"$PORT"'/' /app/config/nginx.conf
 
 psmgr=/tmp/nginx-buildpack-wait
 rm -f $psmgr
