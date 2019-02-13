@@ -53,6 +53,7 @@ apt-get update && apt-get install -y uuid-dev libperl-dev
     --with-http_gzip_static_module \
     --with-http_realip_module \
     --with-http_ssl_module \
+    --with-http_v2_module \
     --prefix=/tmp/nginx \
     --add-module=${temp_dir}/nginx-${NGINX_VERSION}/headers-more-nginx-module-${HEADERS_MORE_VERSION} \
     --add-module=${temp_dir}/nginx-${NGINX_VERSION}/incubator-pagespeed-ngx-${NPS_VERSION}-stable
