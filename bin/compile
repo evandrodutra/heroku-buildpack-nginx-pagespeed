@@ -17,7 +17,8 @@ cp config/mime.types "$1/config/"
 echo '-----> nginx-buildpack: Default mime.types copied to app/config/'
 
 echo '-----> nginx-buildpack: copy $1/config/nginx/$RACK_ENV.conf.erb'
-
+echo $1/config/nginx/$RACK_ENV.conf.erb
+echo $RACK_ENV
 if [[ ! -f $1/config/nginx/$RACK_ENV.conf.erb ]]; then
   cp config/nginx.conf.erb "$1/config/"
   echo '-----> nginx-buildpack: Default config copied to app/config.'
