@@ -16,14 +16,11 @@ mkdir -p "$1/config"
 cp config/mime.types "$1/config/"
 echo '-----> nginx-buildpack: Default mime.types copied to app/config/'
 
-echo '-----> nginx-buildpack: copy $1/config/nginx/$RACK_ENV.conf.erb'
-echo $1/config/nginx/$RACK_ENV.conf.erb
-echo $RACK_ENV
-if [[ ! -f $1/config/nginx/$RACK_ENV.conf.erb ]]; then
+if [[ ! -f $1/config/nginx/nginx.conf.erb ]]; then
   cp config/nginx.conf.erb "$1/config/"
   echo '-----> nginx-buildpack: Default config copied to app/config.'
 else
-  cp "config/nginx/$RACK_ENV.conf.erb" "$1/config/nginx.conf.erb"
+  cp config/nginx/nginx.conf.erb "$1/config/"
   echo '-----> nginx-buildpack: Custom config found in app/config.'
 fi
 
