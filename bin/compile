@@ -20,7 +20,7 @@ if [[ ! -f $1/config/nginx/nginx.conf.erb ]]; then
   cp config/nginx.conf.erb "$1/config/"
   echo '-----> nginx-buildpack: Default config copied to app/config.'
 else
-  cp config/nginx/nginx.conf.erb "$1/config/"
+  cp $1/config/nginx/nginx.conf.erb "$1/config/"
   echo '-----> nginx-buildpack: Custom config found in app/config.'
 fi
 
