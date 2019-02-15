@@ -15,12 +15,12 @@ do
     esac
 done
 
-mkdir -p logs/nginx
+mkdir -p log/nginx
 
-touch logs/nginx/access.log logs/nginx/error.log
+touch log/nginx/access.log log/nginx/error.log
 echo 'buildpack=nginx at=logs-initialized'
 (
-  tail -qF -n 0 logs/nginx/*.log
+  tail -qF -n 0 log/nginx/*.log
   echo 'logs' >$psmgr
 ) &
 
